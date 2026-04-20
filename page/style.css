@@ -1,0 +1,89 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #1b2838;
+    color: #c7d5e0;
+    border-radius: 8px;
+}
+
+h1 { 
+    color: #66c0f4; 
+}
+
+.control-group {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #2a475e;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #66c0f4;
+    color: #171a21;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px 5px 5px 0;
+    cursor: pointer;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+button:hover { 
+    background-color: #4196c9; 
+}
+
+input {
+    padding: 9px;
+    border-radius: 3px;
+    border: 1px solid #171a21;
+    background-color: #171a21;
+    color: white;
+}
+
+#output-box {
+    background-color: #171a21;
+    padding: 15px;
+    border-radius: 5px;
+    font-family: monospace;
+    white-space: pre-wrap;
+    min-height: 60px;
+}
+
+#screenshot-display {
+    max-width: 100%;
+    margin-top: 15px;
+    display: none;
+    border: 2px solid #66c0f4;
+}
+
+/* Styling for the new Formatted Output box */
+#formatted-output {
+    background-color: #2a475e;
+    padding: 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    border-left: 5px solid #66c0f4; /* Default Steam blue edge */
+    transition: all 0.3s ease;
+}
+
+/* Success state (Steam Green) */
+.status-success {
+    border-left-color: #5c7e10 !important;
+    background-color: #1e3322 !important;
+    color: #a3cc4a;
+}
+
+/* Error state (Red) */
+.status-error {
+    border-left-color: #a12721 !important;
+    background-color: #3b1f1f !important;
+    color: #ff5b52;
+}
+
+.storage-stats {
+    margin-top: 10px;
+    line-height: 1.6;
+}

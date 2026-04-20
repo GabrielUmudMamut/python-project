@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steam Auto Controller</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Steam Controller</h1>
+
+    <div class="control-group">
+        <button onclick="fetchData('/opensteam')">Open Steam</button>
+        <button onclick="fetchData('/closesteam')">Close Steam</button>
+        <button onclick="fetchData('/installsteam')">Install Steam</button>
+        <button onclick="fetchData('/storage')">Check Storage</button>
+    </div>
+
+    <div class="control-group">
+        <input type="number" id="gameId" placeholder="Enter Steam Game ID">
+        <button onclick="installGame()">Install Game</button>
+        <button onclick="uninstallGame()">Uninstall Game</button>
+    </div>
+
+    <div class="control-group">
+        <button onclick="takeScreenshot()">Take Screenshot</button>
+        <img id="screenshot-display" alt="Screen Capture">
+    </div>
+
+<h3>Formatted Output:</h3>
+    <div id="formatted-output">Ready for commands...</div>
+
+    <h3>Raw JSON Output:</h3>
+    <div id="output-box">Waiting for commands...</div>
+
+    <script src="script.js"></script>
+</body>
+</html>
