@@ -1,90 +1,79 @@
-const API_BASE = "http://127.0.0.1:8000";
+// --- DYNAMIC CACHE BUSTER ---
+(function() {
+    const v = Date.now(); // The "datenow thing" to fix the favicon
+    
+    // 1. Force Favicon update
+    const favicon = document.getElementById('favicon-link');
+    if (favicon) favicon.href = `/assets/favicon.ico?v=${v}`;
+    
+    // 2. Force CSS update
+    const theme = document.getElementById('theme-link');
+    if (theme) theme.href = `/page/style.css?v=${v}`;
+    
+    // 3. Force this script to update on next reload
+    const script = document.getElementById('main-script');
+    if (script) script.src = `/page/script.js?v=${v}`;
+
+    console.log("Cache busted with version: " + v);
+})();
+
+// --- APP LOGIC ---
+const API_BASE = ""; // Leaving this empty makes it work on any server (not just localhost)
 const outputBox = document.getElementById("output-box");
-const formattedBox = document.getElementById("formatted-output"); // Get the new box
-const timestamp = new Date().getTime();
+const formattedBox = document.getElementById("formatted-output");
 
 async function fetchData(endpoint) {
-    // 1. Set loading states
     outputBox.innerText = "Processing request...";
     formattedBox.innerHTML = "<em>Loading...</em>";
-    formattedBox.className = ""; // Clear any success/error colors
+    formattedBox.className = ""; 
 
     try {
-        const response = await fetch(API_BASE + endpoint);
+        // Add ?v= to API calls too so the JSON data is always fresh
+        const response = await fetch(`${API_BASE}${endpoint}?v=${Date.now()}`);
         const data = await response.json();
         
-        // 2. Put raw JSON in the old box
         outputBox.innerText = JSON.stringify(data, null, 2);
 
-        // 3. Format the new "Good Looking" box based on success/error
         if (data.status === "success") {
-            formattedBox.classList.add("status-success"); // Makes it green
-            
-            // Check if this is the storage endpoint (which has different data)
+            formattedBox.classList.add("status-success");
             if (data.total_GB) {
-                formattedBox.innerHTML = `
-                    <strong>💾 Storage Status</strong>
-                    <div class="storage-stats">
-                        Total Space: ${data.total_GB} GB<br>
-                        Used Space: ${data.used_GB} GB<br>
-                        <strong>Free Space: ${data.free_GB} GB</strong>
-                    </div>
-                `;
+                formattedBox.innerHTML = `<strong>💾 Storage Status</strong><br>Total: ${data.total_GB}GB | Free: ${data.free_GB}GB`;
             } else {
-                // Normal success message for open/close/install
-                formattedBox.innerHTML = `<strong>✅ Success!</strong><br><br>${data.message}`;
+                formattedBox.innerHTML = `<strong>✅ Success!</strong><br>${data.message}`;
             }
-
-        } else if (data.status === "error") {
-            formattedBox.classList.add("status-error"); // Makes it red
-            formattedBox.innerHTML = `<strong>❌ Error!</strong><br><br>${data.message}`;
+        } else {
+            formattedBox.classList.add("status-error");
+            formattedBox.innerHTML = `<strong>❌ Error!</strong><br>${data.message}`;
         }
-
     } catch (error) {
-        // Handle server crash or connection issues
-        outputBox.innerText = "Error: " + error.message;
         formattedBox.className = "status-error";
-        formattedBox.innerHTML = `<strong>🔌 Connection Failed!</strong><br><br>Make sure your Python server is running and the EULA is accepted.`;
+        formattedBox.innerHTML = `<strong>🔌 Connection Failed!</strong>`;
     }
 }
 
 function installGame() {
-    const gameId = document.getElementById("gameId").value;
-    if (!gameId) return alert("Please enter a Game ID");
-    fetchData('/si/' + gameId);
+    const id = document.getElementById("gameId").value;
+    if (id) fetchData('/si/' + id);
 }
 
 function uninstallGame() {
-    const gameId = document.getElementById("gameId").value;
-    if (!gameId) return alert("Please enter a Game ID");
-    fetchData('/uninstall/' + gameId);
+    const id = document.getElementById("gameId").value;
+    if (id) fetchData('/uninstall/' + id);
 }
 
 async function takeScreenshot() {
-    outputBox.innerText = "Capturing screenshot...";
-    formattedBox.innerHTML = "<em>Taking picture...</em>";
-    formattedBox.className = "";
-    
     const imgElement = document.getElementById("screenshot-display");
     imgElement.style.display = "none"; 
-
     try {
-        const response = await fetch(API_BASE + '/screenshot');
-        if (!response.ok) throw new Error("Failed to load image");
-        
+        // Add ?v= to the screenshot so you don't keep seeing the old image
+        const response = await fetch(`${API_BASE}/screenshot?v=${Date.now()}`);
         const imageBlob = await response.blob();
-        const imageObjectURL = URL.createObjectURL(imageBlob);
-        
-        imgElement.src = imageObjectURL;
+        imgElement.src = URL.createObjectURL(imageBlob);
         imgElement.style.display = "block";
-        
-        outputBox.innerText = "Screenshot captured successfully!";
-        formattedBox.classList.add("status-success");
-        formattedBox.innerHTML = `<strong>📸 Screenshot Captured!</strong><br><br>Image is displayed up there ^.`;
-        
-    } catch (error) {
-        outputBox.innerText = "Screenshot Error: " + error.message;
-        formattedBox.classList.add("status-error");
-        formattedBox.innerHTML = `<strong>❌ Screenshot Failed!</strong><br><br>${error.message}`;
+        formattedBox.className = "status-success";
+        formattedBox.innerHTML = `<strong>📸 Screenshot Captured!</strong>`;
+    } catch (e) {
+        formattedBox.className = "status-error";
+        formattedBox.innerHTML = `<strong>❌ Screenshot Failed!</strong>`;
     }
 }
