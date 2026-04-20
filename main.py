@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, FileResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware #ai told me to do this
 import os, time, pyautogui, requests, subprocess, shutil, io
 
@@ -11,6 +11,26 @@ app.add_middleware( #ai
     allow_methods=["*"], # Allows all methods
     allow_headers=["*"], # Allows all headers
 ) #ai
+
+@app.get("/")
+def init():
+    return RedirectResponse(url="/page/index.html")
+
+@app.get("/page/index.html")
+def init():
+    return FileResponse(os.path.join("page", "index.html"))
+
+@app.get("/page/style.css")
+def get_style():
+    return FileResponse(os.path.join("page", "style.css"))
+
+@app.get("/page/script.js")
+def get_script():
+    return FileResponse(os.path.join("page", "script.js"))
+
+@app.get("/assets/favicon.ico")
+def get_favicon():
+    return FileResponse(os.path.join("assets", "favicon.ico"))
 
 @app.get("/installsteam")
 def installsteam():

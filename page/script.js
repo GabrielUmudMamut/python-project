@@ -1,6 +1,7 @@
 const API_BASE = "http://127.0.0.1:8000";
 const outputBox = document.getElementById("output-box");
 const formattedBox = document.getElementById("formatted-output"); // Get the new box
+const timestamp = new Date().getTime();
 
 async function fetchData(endpoint) {
     // 1. Set loading states
