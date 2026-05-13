@@ -1,0 +1,16 @@
+{
+    "week_number": 1,
+    "day_number": 1,
+    "total_item_types": 1,
+    "inventory": [
+        {
+            "name": "tung",
+            "cost": 1.0,
+            "price": 2.0,
+            "made": 10,
+            "sold": 10,
+            "remaining": 0,
+            "profit": 10.0
+        }
+    ]
+}

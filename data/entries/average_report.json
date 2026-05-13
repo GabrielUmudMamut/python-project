@@ -1,0 +1,16 @@
+{
+    "analysis_info": {
+        "days_analyzed": 1,
+        "start_point": "w1d1"
+    },
+    "averages": [
+        {
+            "name": "Tung",
+            "avg_made": 10.0,
+            "avg_sold": 10.0,
+            "avg_remaining": 0.0,
+            "avg_profit": 10.0,
+            "avg_loss": 0.0
+        }
+    ]
+}
