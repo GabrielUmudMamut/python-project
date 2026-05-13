@@ -6,56 +6,150 @@
     <title>Inventory API</title>
     <style>
         body { 
-            font-family: sans-serif; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
             padding: 2rem; 
             max-width: 600px; 
+            margin: 0 auto;
+            background-color: #fafafa;
+            color: #333;
         }
-        textarea { 
-            width: 100%; 
-            height: 200px; 
-            margin-bottom: 1rem; 
-        }
-        .controls {
+        .header-area {
             display: flex;
-            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
         }
-        input { 
-            flex-grow: 1; 
-            padding: 8px; 
+        h2 { font-weight: 500; margin: 0; }
+        
+        /* New Toolbar Styling */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            background: #eef2f6;
+            padding: 10px 16px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
         }
-        button { 
-            padding: 8px 16px; 
+        .toolbar-left { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
             cursor: pointer; 
+            font-weight: 500; 
         }
+
+        #fileList { display: flex; flex-direction: column; gap: 10px; }
+        .file-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #eaeaea;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+        .file-name { font-family: monospace; font-size: 14px; color: #555; }
+        .file-actions { display: flex; gap: 8px; }
+        button { 
+            padding: 6px 12px; 
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .btn-view { background-color: #f0f0f0; color: #333; }
+        .btn-view:hover { background-color: #e4e4e4; }
+        .btn-down { background-color: #1a1a1a; color: white; }
+        .btn-down:hover { background-color: #333; }
+        .btn-master { background-color: #2563eb; color: white; padding: 10px 16px; font-size: 14px;}
+        .btn-master:hover { background-color: #1d4ed8; }
+        .empty-state { color: #888; font-style: italic; }
+        input[type="checkbox"] { cursor: pointer; transform: scale(1.2); }
     </style>
 </head>
 <body>
-    <h2>Available Files</h2>
-    <textarea id="manifestBox" readonly>Loading manifest data...</textarea>
+    <div class="header-area">
+        <h2>Available Reports</h2>
+        <button class="btn-master" onclick="downloadSelected()">⬇ Download Selected (ZIP)</button>
+    </div>
     
-    <div class="controls">
-        <input type="text" id="filename" placeholder="Enter file name">
-        <button onclick="handleAction('view')">View</button>
-        <button onclick="handleAction('down')">Download</button>
+    <div class="toolbar">
+        <label class="toolbar-left">
+            <input type="checkbox" id="selectAllBox" onclick="toggleSelectAll()">
+            <span>Select All</span>
+        </label>
+    </div>
+
+    <div id="fileList">
+        <span class="empty-state">Loading files...</span>
     </div>
 
     <script>
-        fetch('/view/manifest.json/')
-            .then(response => response.text())
+        fetch('/api/files/')
+            .then(response => response.json())
             .then(data => {
-                document.getElementById('manifestBox').value = data;
+                const listContainer = document.getElementById('fileList');
+                listContainer.innerHTML = '';
+
+                if (data.files && data.files.length > 0) {
+                    data.files.forEach(file => {
+                        const row = document.createElement('div');
+                        row.className = 'file-row';
+                        
+                        row.innerHTML = `
+                            <label class="file-info">
+                                <input type="checkbox" class="file-checkbox" value="${file}">
+                                <span class="file-name">${file}</span>
+                            </label>
+                            <div class="file-actions">
+                                <button class="btn-view" onclick="window.open('/view/${file}/', '_blank')">View</button>
+                                <button class="btn-down" onclick="window.open('/down/${file}/', '_blank')">Download</button>
+                            </div>
+                        `;
+                        
+                        listContainer.appendChild(row);
+                    });
+                } else {
+                    listContainer.innerHTML = '<span class="empty-state">No files found in data/entries.</span>';
+                }
             })
             .catch(error => {
-                document.getElementById('manifestBox').value = 'Could not load manifest. Make sure the API is running.';
+                document.getElementById('fileList').innerHTML = '<span class="empty-state">Could not load files. Is the API running?</span>';
             });
 
-        function handleAction(action) {
-            const file = document.getElementById('filename').value;
-            if (file) {
-                window.open(`/${action}/${file}/`, '_blank');
-            } else {
-                alert('Please enter a file name first.');
+        // NEW: Select All Logic
+        function toggleSelectAll() {
+            const isChecked = document.getElementById('selectAllBox').checked;
+            const checkboxes = document.querySelectorAll('.file-checkbox');
+            checkboxes.forEach(box => {
+                box.checked = isChecked;
+            });
+        }
+
+        // Function to gather all checked boxes and request the ZIP
+        function downloadSelected() {
+            const checkboxes = document.querySelectorAll('.file-checkbox:checked');
+            
+            if (checkboxes.length === 0) {
+                alert("Please select at least one file to download.");
+                return;
             }
+
+            const params = new URLSearchParams();
+            checkboxes.forEach(box => {
+                params.append("files", box.value);
+            });
+
+            window.location.href = `/api/download-zip/?${params.toString()}`;
         }
     </script>
 </body>

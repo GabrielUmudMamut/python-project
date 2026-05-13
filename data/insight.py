@@ -1,12 +1,12 @@
 import json
 import os
-import google.generativeai as genai
 from dotenv import load_dotenv
+from google import genai
+from google.genai import types
+
+# This is the magic line that actually reads your .env file!
 load_dotenv()
 
-# Load your API key from an environment variable.
-# Set it with: export GEMINI_API_KEY="your_key_here"
-# Or create a .env file and use the `python-dotenv` package.
 API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
 DATA_DIR = "data/entries"
@@ -34,18 +34,15 @@ Return ONLY a valid JSON object in this exact format (no extra text or markdown)
 Rules:
 - Only add an item to "alerts" if it has notably high waste (low sell-through).
 - Only add an item to "good_performers" if it sells out almost completely.
-- If no items qualify for a category, return an empty list for it.
+- If no items fit a category, leave the list empty [].
 """
 
-
-def load_average_data() -> list | None:
-    """Loads the average report. Returns None if it doesn't exist."""
+def load_average_data():
     if not os.path.exists(AVERAGE_REPORT):
         print("❌ No average data found. Run the Average tool first.")
         return None
     with open(AVERAGE_REPORT, "r") as f:
         return json.load(f)["averages"]
-
 
 def generate_insights():
     print("\n" + "═" * 45)
@@ -54,23 +51,27 @@ def generate_insights():
 
     if not API_KEY:
         print("❌ GEMINI_API_KEY environment variable is not set.")
-        print("   Set it with: export GEMINI_API_KEY='your_key_here'")
+        print("   Make sure your .env file is in the same folder as your main script.")
         return
 
     averages = load_average_data()
     if averages is None:
         return
 
-    genai.configure(api_key=API_KEY)
+    # Initialize the new genai client
+    client = genai.Client(api_key=API_KEY)
 
     prompt = PROMPT_TEMPLATE.format(data=json.dumps(averages, indent=2))
 
     try:
-        model = genai.GenerativeModel(
-            "gemini-2.5-flash",
-            generation_config={"response_mime_type": "application/json"},
+        # The new syntax for calling the model
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+            )
         )
-        response = model.generate_content(prompt)
         ai_insights = json.loads(response.text)
 
         os.makedirs(DATA_DIR, exist_ok=True)
@@ -78,14 +79,14 @@ def generate_insights():
             json.dump(ai_insights, f, indent=4)
 
         print(f"\n✅ AI analysis complete!")
-        print(f"   Summary: {ai_insights.get('summary', 'N/A')}")
-        print(f"   Saved to {INSIGHT_REPORT}. Refresh your web dashboard!")
+        print(f"   Insights saved to: {INSIGHT_REPORT}")
+        
+        # Print a quick preview
+        print("\n─── AI SUMMARY ───")
+        print(ai_insights.get("summary", "No summary provided."))
 
-    except json.JSONDecodeError:
-        print("❌ The AI returned an unexpected format. Please try again.")
     except Exception as e:
-        print(f"❌ Something went wrong: {e}")
-
+        print(f"\n❌ Error contacting AI: {e}")
 
 if __name__ == "__main__":
     generate_insights()

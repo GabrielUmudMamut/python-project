@@ -1,7 +1,9 @@
-from fastapi import FastAPI
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, Query
+from fastapi.responses import FileResponse, StreamingResponse
 import uvicorn
 import os
+import zipfile
+import io
 
 app = FastAPI()
 
@@ -10,6 +12,31 @@ def serve_webpage():
     return FileResponse("webpage/index.html")
 
 #ai generated code start
+@app.get("/api/download-zip/")
+def download_zip(files: list[str] = Query(None)):
+    if not files:
+        return {"error": "No files selected"}
+
+    # Create a ZIP file in memory
+    zip_buffer = io.BytesIO()
+    
+    with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
+        for file in files:
+            file_path = f"data/entries/{file}"
+            # Double check the file actually exists before zipping
+            if os.path.exists(file_path):
+                zip_file.write(file_path, arcname=file)
+    
+    # Rewind the memory buffer to the beginning
+    zip_buffer.seek(0)
+    
+    # Send it to the browser with a pre-assigned name
+    return StreamingResponse(
+        zip_buffer, 
+        media_type="application/zip", 
+        headers={"Content-Disposition": "attachment; filename=inventory_reports.zip"}
+    )
+
 @app.get("/api/files/")
 def list_available_files():
     folder_path = "data/entries"
@@ -29,7 +56,6 @@ def init(filename: str, what: str):
         return FileResponse(path=file_path)
     else:
         return {"status": "error", "text": "What you doing? You can only view or download the file."}
-    
 def start_server():
     uvicorn.run(app, host="127.0.0.1", port=8000)
 
