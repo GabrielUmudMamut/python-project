@@ -39,19 +39,19 @@ Rules:
 
 def load_average_data():
     if not os.path.exists(AVERAGE_REPORT):
-        print("❌ No average data found. Run the Average tool first.")
+        print("No average data found. Run the Average tool first.")
         return None
     with open(AVERAGE_REPORT, "r") as f:
         return json.load(f)["averages"]
 
 def generate_insights():
     print("\n" + "═" * 45)
-    print("      🤖  CALLING AI CONSULTANT...")
+    print("Generating AI Insights...")
     print("═" * 45)
 
     if not API_KEY:
-        print("❌ GEMINI_API_KEY environment variable is not set.")
-        print("   Make sure your .env file is in the same folder as your main script.")
+        print("GEMINI_API_KEY environment variable is not set.")
+        print("Make sure your .env file is in the same folder as your main script.")
         return
 
     averages = load_average_data()
@@ -78,8 +78,8 @@ def generate_insights():
         with open(INSIGHT_REPORT, "w") as f:
             json.dump(ai_insights, f, indent=4)
 
-        print(f"\n✅ AI analysis complete!")
-        print(f"   Insights saved to: {INSIGHT_REPORT}")
+        print(f"\nAI analysis complete!")
+        print(f"Insights saved to: {INSIGHT_REPORT}")
         
         # Print a quick preview
         print("\n─── AI SUMMARY ───")

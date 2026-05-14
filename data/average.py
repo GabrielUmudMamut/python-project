@@ -20,7 +20,7 @@ def get_valid_int(prompt: str) -> int:
         try:
             return int(input(prompt))
         except ValueError:
-            print("  ❌ Please enter a whole number.")
+            print("Please enter a whole number.")
 
 
 def run_average():
@@ -28,14 +28,14 @@ def run_average():
     print("\n─── AVERAGE CALCULATOR ─────────────────")
     try:
         start_week = get_valid_int("Starting week number: ")
-        start_day = get_valid_int("Starting day (1–7): ")
+        start_day = get_valid_int("Starting day (1-7): ")
         num_days = get_valid_int("How many consecutive days to analyse? ")
     except KeyboardInterrupt:
         print("\nCancelled.")
         return
 
     if not (1 <= start_day <= 7):
-        print("❌ Day must be between 1 and 7.")
+        print("Day must be between 1 and 7.")
         return
 
     # Accumulate stats across the date range
@@ -76,7 +76,7 @@ def run_average():
             current_week += 1
 
     if days_found == 0:
-        print("❌ No data files found for that date range.")
+        print("No data files found for that date range.")
         return
 
     # Build the final averaged report

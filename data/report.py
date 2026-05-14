@@ -25,14 +25,14 @@ def run_report():
         week = int(input("Which week? "))
         day = int(input("Which day (1–7)? "))
     except ValueError:
-        print("❌ Please enter valid numbers.")
+        print("Please enter valid numbers.")
         input("Press Enter to return to the menu...")
         return
 
     data = load_inventory_data(week, day)
 
     if not data:
-        print(f"\n❌ No records found for Week {week}, Day {day}.")
+        print(f"\nNo records found for Week {week}, Day {day}.")
         input("Press Enter to return to the menu...")
         return
 

@@ -1,10 +1,5 @@
-import os
 import time
-
-def clear_screen():
-    """Clears the terminal for a clean menu experience."""
-    os.system('cls' if os.name == 'nt' else 'clear')
-
+from data import clear
 
 def print_menu():
     print("╔══════════════════════════════════════╗")
@@ -21,7 +16,7 @@ def print_menu():
 def main_menu():
     """Main hub that keeps the program running until the user quits."""
     while True:
-        clear_screen()
+        clear.clear_screen()
         print_menu()
 
         choice = input("\nWhat would you like to do? (1–5): ").strip()
@@ -36,7 +31,7 @@ def main_menu():
             report.run_report()
 
         elif choice == '3':
-            print("\n⚠️  Warning: This will overwrite your previous average report.")
+            print("\nWarning: This will overwrite your previous average report.")
             confirm = input("Do you want to continue? (yes/no): ").strip().lower()
             if confirm in ('y', 'yes'):
                 print("\nCrunching the numbers...")
@@ -59,7 +54,7 @@ def main_menu():
             break
 
         else:
-            input("\n❌ Invalid choice. Press Enter to try again...")
+            input("\nInvalid choice. Press Enter to try again...")
 
 
 if __name__ == "__main__":

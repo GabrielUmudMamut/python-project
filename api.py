@@ -56,6 +56,7 @@ def init(filename: str, what: str):
         return FileResponse(path=file_path)
     else:
         return {"status": "error", "text": "What you doing? You can only view or download the file."}
+
 def start_server():
     uvicorn.run(app, host="127.0.0.1", port=8000)
 

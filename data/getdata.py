@@ -17,7 +17,7 @@ def get_valid_int(prompt):
         try:
             return int(input(prompt))
         except ValueError:
-            print("  ❌ Please enter a whole number.")
+            print("Please enter a whole number.")
 
 
 def get_valid_float(prompt):
@@ -26,7 +26,7 @@ def get_valid_float(prompt):
         try:
             return float(input(prompt))
         except ValueError:
-            print("  ❌ Please enter a valid number (decimals are fine).")
+            print("Please enter a valid number (decimals are fine).")
 
 
 def load_prices():
@@ -88,7 +88,7 @@ def collect_item_data(item_num: int, saved_prices: dict) -> dict:
         sold = get_valid_int(f"  How many {display_name}s did you sell? ")
         if sold <= made:
             break
-        print(f"  ❌ Can't sell more than you made ({made}). Try again.")
+        print(f"Can't sell more than you made ({made}). Try again.")
 
     remaining = made - sold
     revenue = sold * price
@@ -114,7 +114,7 @@ def run_getdata():
     day_num = get_valid_int("Day number (1 = Mon, 7 = Sun): ")
 
     while not (1 <= day_num <= 7):
-        print("  ❌ Day must be between 1 and 7.")
+        print("Day must be between 1 and 7.")
         day_num = get_valid_int("Day number (1–7): ")
 
     total_products = get_valid_int("How many different product types today? ")
@@ -150,4 +150,4 @@ def run_getdata():
         manifest["files_available"].append(filename)
     save_manifest(manifest)
 
-    print(f"\n✅ Saved to {filepath}. Price memory updated.")
+    print(f"\nSaved to {filepath}. Price memory updated.")

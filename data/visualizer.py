@@ -32,7 +32,7 @@ def draw_visuals():
 
     days = data["analysis_info"]["days_analyzed"]
     print(f"\n{'═'*56}")
-    print(f"  📊 INVENTORY VISUALISER  |  Days analysed: {days}")
+    print(f"INVENTORY VISUALISER  |  Days analysed: {days}")
     print(f"{'═'*56}")
     print(f"  {'Product':<16} Sell-through")
     print(f"  {'─'*16} {'─'*34}")
